@@ -147,5 +147,19 @@ print(v)
     ncenters <- dim(centers)[1]
   } # while end
   
-  return (data.frame(centers, GmeansIterationCount))
+  # Below is for increased readibility of output
+  # TODO: Should probably create a class here before returning
+  clnms <- c()
+  rnames <- c()
+  for (i in 1:dim(centers)[2]) {
+    clnms <- c(clnms, paste("dim", i, sep=""))
+  }
+  for (i in 1:dim(centers)[1]) {
+    rnames <- c(rnames, paste("c", i, sep=""))
+  }
+  centersDF <- data.frame(centers)
+  colnames(centersDF) <- clnms
+  rownames(centersDF) <- rnames
+  
+  return (data.frame(centersDF, GmeansIterationCount))
 }
