@@ -56,6 +56,7 @@ Gmeans <- function(X,alpha = 0.0001,k=1){
   clusters <- kout$cluster
   
   GmeansIterationCount <- 0
+  newCentersToAddInited = FALSE
   
   # Begin Gmeans iterations
   while (1) {
@@ -63,15 +64,29 @@ Gmeans <- function(X,alpha = 0.0001,k=1){
 
     centersToKeep <- c()   # Indices of centers to keep  after this iteration
 #    newCentersToAdd <- c()
+    newCentersToAddInited = FALSE
+    
+print(paste("Iter count =", GmeansIterationCount))
 
     for (i in 1:ncenters) {
       cl <- getCluster(i, M, clusters)
       
+      print(paste("CLUSTER SIZE:", nrow(cl)))
+      
       # Split the center of the current cluster using principal component technique
       splitCenters <- computeInitialSplitCenters(centers[i], cl)
+print("SPLIT C:")
+print(splitCenters)
 
-      koutnew <- kmeans(cl, splitCenters)
+      # XXX BUG: kmeans sometimes throws an Error: empty cluster: try a better set of initial centers
+      # In such a case, we do not provide the set of splitCenters to kmeans, but rather
+      # let kmeans figure out 2 new centers
+      t <- tryCatch(koutnew <- kmeans(cl, splitCenters), error = function(e) e)
       
+      if (is(t, "error")) {
+        koutnew <- kmeans(cl, 2)
+      }
+        
       newCenters <- koutnew$centers
       print("NEW CENTERS:")
 print(newCenters)
@@ -86,26 +101,36 @@ print(v)
       adtest <- nortest::ad.test(p)
       
       if (adtest$p.value <= alpha) {   # Reject H0. cluster is not Gaussian. Accept the split
-        if (exists("newCentersToAdd")) {
-          newCentersToAdd <- rbind(newCentersToAdd, newCenters)
+        if (newCentersToAddInited == FALSE) {
+          newCentersToAdd <- as.matrix(newCenters)
+          newCentersToAddInited = TRUE
         }
         else {
-          newCentersToAdd <- as.matrix(newCenters)
+          newCentersToAdd <- rbind(newCentersToAdd, newCenters)
         }
+  print("CENTERS KEPT ++++++++++++++++++++++++++++\n")
+  cat("\n\n\n")
       }
       else {  # Reject H1. Cluster follows a Gaussian dist. Do not accept split
         centersToKeep <- c(centersToKeep, i)
+  print("CENTERS NOT KEPT ++++++++++++++++++++++++++++")
       }
-      
+      cat("\n")
     } # for end
+
+#    newCentersToAddInited = FALSE
 
     # Do a sanity check here.
     # The following equality should be valid:
     # (ncenters - length(centersToKeep)) * 2 = nrow(newCentersToAdd)
-    if ( 2*(ncenters- length(centersToKeep)) != nrow(newCentersToAdd) ) {
-      stop("SANITY check failed")
+    if (newCentersToAddInited == TRUE) {
+      if ( 2*(ncenters- length(centersToKeep)) != nrow(newCentersToAdd) ) {
+        stop(paste("SANITY check failed. ncenters = ", ncenters, "length(centersToKeep) = ", length(centersToKeep), "nrow(newCentersToAdd) =", nrow(newCentersToAdd)))
+      }
     }
     
+    GmeansIterationCount = GmeansIterationCount + 1
+
     # If number of centers is same as before, we are done
     if (length(centersToKeep) == ncenters)
       break   # Break while
@@ -120,8 +145,6 @@ print(v)
     clusters <- kout$cluster
     
     ncenters <- dim(centers)[1]
-    
-    GmeansIterationCount = GmeansIterationCount + 1
   } # while end
   
   return (data.frame(centers, GmeansIterationCount))
