@@ -10,14 +10,11 @@
 # Find the 1-D projection of a matrix of points X on line V
 projection <- function(X, v) {
 
-#  Xt <- t(X)  # Transpose the matrix so that each data point is in a column
-
   if (ncol(X) != length(v)) {
     stop("projection:: Dimensions of points in X is not same as dimension of v")
   }
 
   v <- matrix(v, ncol=1)
-  print(paste("X: nrow = ", nrow(X), " ncol =", ncol(X), "v: nrow =", nrow(v), " ncol = ", ncol(v)))
   out.vector <- as.vector(X%*%v/sum(v*v))
   
   return (out.vector)
@@ -63,20 +60,13 @@ Gmeans <- function(X,alpha = 0.0001,k=1){
     ncenters <- dim(centers)[1]
 
     centersToKeep <- c()   # Indices of centers to keep  after this iteration
-#    newCentersToAdd <- c()
     newCentersToAddInited = FALSE
-    
-print(paste("Iter count =", GmeansIterationCount))
 
     for (i in 1:ncenters) {
       cl <- getCluster(i, M, clusters)
       
-      print(paste("CLUSTER SIZE:", nrow(cl)))
-      
       # Split the center of the current cluster using principal component technique
       splitCenters <- computeInitialSplitCenters(centers[i], cl)
-print("SPLIT C:")
-print(splitCenters)
 
       # XXX BUG: kmeans sometimes throws an Error: empty cluster: try a better set of initial centers
       # In such a case, we do not provide the set of splitCenters to kmeans, but rather
@@ -88,11 +78,8 @@ print(splitCenters)
       }
         
       newCenters <- koutnew$centers
-      print("NEW CENTERS:")
-print(newCenters)
+
       v <- as.vector(newCenters[1,] - newCenters[2,])
-print("V:")
-print(v)
       p <- projection(cl, v)
       
       p <- (p-mean(p))/sd(p)  # Normalize
@@ -108,17 +95,11 @@ print(v)
         else {
           newCentersToAdd <- rbind(newCentersToAdd, newCenters)
         }
-  print("CENTERS KEPT ++++++++++++++++++++++++++++\n")
-  cat("\n\n\n")
       }
       else {  # Reject H1. Cluster follows a Gaussian dist. Do not accept split
         centersToKeep <- c(centersToKeep, i)
-  print("CENTERS NOT KEPT ++++++++++++++++++++++++++++")
       }
-      cat("\n")
     } # for end
-
-#    newCentersToAddInited = FALSE
 
     # Do a sanity check here.
     # The following equality should be valid:
