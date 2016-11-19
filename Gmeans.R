@@ -142,5 +142,5 @@ Gmeans <- function(X,alpha = 0.0001,k=1){
   colnames(centersDF) <- clnms
   rownames(centersDF) <- rnames
   
-  return (data.frame(centersDF, GmeansIterationCount))
+  return (list(centers=centersDF, numIterations=GmeansIterationCount, clusters=clusters))
 }
