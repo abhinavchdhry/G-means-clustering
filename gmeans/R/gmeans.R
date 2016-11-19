@@ -2,10 +2,10 @@
 # Implement G-means algorithm                                      #
 ####################################################################
 
-#install.packages("vegan")
-#install.packages("nortest")
-#library(vegan)
-#library(nortest)
+library(dplyr)
+library(vegan)
+library(nortest)
+library(mixtools)
 
 # Find the 1-D projection of a matrix of points X on line V
 projection <- function(X, v) {
@@ -41,8 +41,18 @@ computeInitialSplitCenters <- function(c, cluster) {
   return(v)
 }
 
-# X is the input dataset(it is a dataframe contain multiple cols reading from csv file)
-Gmeans <- function(X,alpha = 0.0001,k=1){
+#' K-means clustering using the Gaussian means approach
+#'
+#' @param x A data frame or matrix with each row representing an individual observation
+#' @param alpha The significance level for the Gaussian tests for splitting
+#' @param k Initial number of centers to begin with. Default is 1. The initial set of centers is generated using K-means
+#' @return A list containing the following elements:
+#'    centers A C x ncol(x) matrix representing the C cluster centers
+#'    numIterations A numeric value denoting the number of iterations
+#'    clusters A vector representing the cluster number for each observation in x
+#' @examples
+#' 
+Gmeans <- function(x,alpha = 0.0001,k=1){
   
   # Convert the data frame to a matrix for easier handling
   M <- data.matrix(X)
@@ -143,19 +153,4 @@ Gmeans <- function(X,alpha = 0.0001,k=1){
   rownames(centersDF) <- rnames
   
   return (list(centers=centersDF, numIterations=GmeansIterationCount, clusters=clusters))
-}
-
-# Assumes data is N x 2 matrix
-plot.clusters.2D <- function(data, clusters) {
-  if (nrow(data) != length(clusters))
-    stop("Data and clusters vector should be of same length")
-
-  plot(data)
-  df <- as.data.frame(cbind(data, clusters))
-  names(df) <- c("1", "2", "clusters")
-
-  for (i in unique(df$clusters)) {
-    cluster <- subset(df, clusters == i, select = c("1", "2"))
-    ellipse(mu=colMeans(cluster), sigma=cov(cluster), alpha=0.05, npoints=nrow(cluster), col="red")
-  }
 }

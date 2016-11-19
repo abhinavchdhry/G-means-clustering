@@ -1,0 +1,15 @@
+Package: gmeans
+Title: Optimal K-means clustering using Gaussian means technique
+Version: 0.0.0.9000
+Authors@R: person("Abhinav", "Choudhury", email = "abhinav155.bits@gmail.com", role = c("aut", "cre"))
+Description: Performs K-means clustering to find the optimal number of clusters using Gaussian means technique as described by Hamerly (https://papers.nips.cc/paper/2526-learning-the-k-in-k-means.pdf)
+Depends: R (>= 3.3.1)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports:
+	dplyr,
+	vegan,
+	nortest,
+	mixtools
+RoxygenNote: 5.0.1.9000
