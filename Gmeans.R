@@ -144,3 +144,18 @@ Gmeans <- function(X,alpha = 0.0001,k=1){
   
   return (list(centers=centersDF, numIterations=GmeansIterationCount, clusters=clusters))
 }
+
+# Assumes data is N x 2 matrix
+plot.clusters.2D <- function(data, clusters) {
+  if (nrow(data) != length(clusters))
+    stop("Data and clusters vector should be of same length")
+
+  plot(data)
+  df <- as.data.frame(cbind(data, clusters))
+  names(df) <- c("1", "2", "clusters")
+
+  for (i in unique(df$clusters)) {
+    cluster <- subset(df, clusters == i, select = c("1", "2"))
+    ellipse(mu=colMeans(cluster), sigma=cov(cluster), alpha=0.05, npoints=nrow(cluster), col="red")
+  }
+}
