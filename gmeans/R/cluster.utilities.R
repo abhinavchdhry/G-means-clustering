@@ -6,7 +6,7 @@
 #' @param m1    A (k x d) matrix of mean of the points in each cluster for each dimension
 #' @param m2    A (k x d) matrix of SD of points in each cluster for each dimension
 #' @return A matrix of d columns
-#' 
+
 clusters.generate <- function(k, d, nump, m1, m2) {
   
   ## Do param validation here
@@ -46,7 +46,6 @@ clusters.generate <- function(k, d, nump, m1, m2) {
 #'
 #' @param data     A data frame or matrix with each row representing an individual observation
 #' @param clusters The cluster vector from the output of Gmeans on the data 
-#' 
 # Assumes data is N x 2 matrix
 clusters.plot.2D <- function(data, clusters) {
   if (nrow(data) != length(clusters))

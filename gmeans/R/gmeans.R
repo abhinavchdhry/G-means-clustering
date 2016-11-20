@@ -50,8 +50,7 @@ computeInitialSplitCenters <- function(c, cluster) {
 #'    centers A C x ncol(x) matrix representing the C cluster centers
 #'    numIterations A numeric value denoting the number of iterations
 #'    clusters A vector representing the cluster number for each observation in x
-#' @examples
-#' 
+
 Gmeans <- function(x,alpha = 0.0001,k=1){
   
   # Convert the data frame to a matrix for easier handling
