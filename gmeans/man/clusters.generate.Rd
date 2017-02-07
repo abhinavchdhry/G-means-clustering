@@ -23,4 +23,3 @@ A matrix of d columns
 \description{
 Generate random N-dimensional clusters based on mean and SD
 }
-

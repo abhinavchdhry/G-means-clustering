@@ -22,4 +22,3 @@ A list containing the following elements:
 \description{
 K-means clustering using the Gaussian means approach
 }
-

@@ -2,6 +2,8 @@
 # Implement G-means algorithm                                      #
 ####################################################################
 
+#' @import dplyr vegan nortest mixtools
+
 library(dplyr)
 library(vegan)
 library(nortest)
@@ -54,7 +56,7 @@ computeInitialSplitCenters <- function(c, cluster) {
 Gmeans <- function(x,alpha = 0.0001,k=1){
   
   # Convert the data frame to a matrix for easier handling
-  M <- data.matrix(X)
+  M <- data.matrix(x)
   
   # Run kmeans first to find the initial k centers
   kout <- kmeans(M, k)
